@@ -1,12 +1,11 @@
 import { jobTypes } from "@/lib/job-types";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import Select from "./ui/select";
 import prisma from "@/lib/prisma";
-import { Button } from "./ui/button";
 import { JobFilterValues, jobFilterSchema } from "@/lib/validation";
 import { redirect } from "next/navigation";
 import FormSubmitButton from "./FormSubmitButton";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import Select from "./ui/select";
 
 async function filterJobs(formData: FormData) {
   "use server";
