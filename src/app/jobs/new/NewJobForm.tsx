@@ -1,10 +1,41 @@
 "use client";
 
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import H1 from "@/components/ui/h1";
+import { CreateJobValues, createJobSchema } from "@/lib/validation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import Select from "@/components/ui/select";
+import { jobTypes } from "@/lib/job-types";
 
 // because Metadata cannot be in client component, so I create this component
 export default function NewJobForm() {
+  const form = useForm<CreateJobValues>({
+    resolver: zodResolver(createJobSchema),
+  });
+
+  const {
+    handleSubmit,
+    watch,
+    trigger,
+    control,
+    setValue,
+    setFocus,
+    formState: { isSubmitting },
+  } = form;
+
+  async function onSubmit(values: CreateJobValues) {
+    alert(JSON.stringify(values, null, 2));
+  }
+
   return (
     <main className="m-auto my-10 max-w-3xl space-y-10">
       <div className="space-y-5 text-center">
@@ -21,8 +52,76 @@ export default function NewJobForm() {
           </p>
         </div>
 
-        <Form>
-          
+        <Form {...form}>
+          <form
+            className="space-y-4"
+            noValidate
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <FormField
+              control={control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Frontend Developer" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job type</FormLabel>
+                  <FormControl>
+                    <Select {...field} defaultValue="">
+                      <option value="" hidden>
+                        Select an option
+                      </option>
+                      {jobTypes.map((jobType) => (
+                        <option key={jobType} value={jobType}>
+                          {jobType}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name="companyName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Company</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name="companyLogo"
+              render={({ field: {value, ...fieldValues} }) => (
+                <FormItem>
+                  <FormLabel>Compan logo</FormLabel>
+                  <FormControl>
+                    <Input {...fieldValues} type="file" accept="image/*" >
+                      
+                    </Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
         </Form>
       </div>
     </main>
