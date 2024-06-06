@@ -9,12 +9,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import H1 from "@/components/ui/h1";
+import Label from "@/components/ui/label";
 import { CreateJobValues, createJobSchema } from "@/lib/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import Select from "@/components/ui/select";
-import { jobTypes } from "@/lib/job-types";
+import { jobTypes, locationTypes } from "@/lib/job-types";
+import LocationInput from "@/components/LocationInput";
+import { X } from "lucide-react";
 
 // because Metadata cannot be in client component, so I create this component
 export default function NewJobForm() {
@@ -109,18 +112,79 @@ export default function NewJobForm() {
             <FormField
               control={control}
               name="companyLogo"
-              render={({ field: {value, ...fieldValues} }) => (
+              render={({ field: { value, ...fieldValues } }) => (
                 <FormItem>
                   <FormLabel>Compan logo</FormLabel>
                   <FormControl>
-                    <Input {...fieldValues} type="file" accept="image/*" >
-                      
-                    </Input>
+                    <Input
+                      {...fieldValues}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        fieldValues.onChange(file);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <FormField
+              control={control}
+              name="locationType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Select {...field} defaultValue="">
+                      <option value="" hidden>
+                        Select an option
+                      </option>
+                      {locationTypes.map((locationType) => (
+                        <option key={locationType} value={locationType}>
+                          {locationType}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Office location</FormLabel>
+                  <FormControl>
+                    <LocationInput
+                      onLocationSelected={field.onChange}
+                      ref={field.ref}
+                    />
+                  </FormControl>
+                  {watch("location") && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setValue("location", "", { shouldValidate: true });
+                        }}
+                      >
+                        <X size={20} />
+                      </button>
+                      <span className="text-sm">{watch("location")}</span>
+                    </div>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="space-y-2">
+              <Label htmlFor="applicationEmail">How to apply</Label>
+              <div></div>
+            </div>
           </form>
         </Form>
       </div>
