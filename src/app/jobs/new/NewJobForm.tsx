@@ -9,7 +9,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import H1 from "@/components/ui/h1";
-import Label from "@/components/ui/label";
 import { CreateJobValues, createJobSchema } from "@/lib/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +17,7 @@ import Select from "@/components/ui/select";
 import { jobTypes, locationTypes } from "@/lib/job-types";
 import LocationInput from "@/components/LocationInput";
 import { X } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 // because Metadata cannot be in client component, so I create this component
 export default function NewJobForm() {
