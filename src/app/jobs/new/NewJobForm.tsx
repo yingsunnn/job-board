@@ -1,5 +1,9 @@
 "use client";
 
+import LoadingButton from "@/components/LoadingButton";
+// import LoadingButton from "@/components/LoadingButton";
+import LocationInput from "@/components/LocationInput";
+import RichTextEditor from "@/components/RichTextEditor";
 import {
   Form,
   FormControl,
@@ -9,18 +13,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import H1 from "@/components/ui/h1";
-import { CreateJobValues, createJobSchema } from "@/lib/validation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Select from "@/components/ui/select";
 import { jobTypes, locationTypes } from "@/lib/job-types";
-import LocationInput from "@/components/LocationInput";
+import { CreateJobValues, createJobSchema } from "@/lib/validation";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import RichTextEditor from "@/components/RichTextEditor";
+import { draftToMarkdown } from "markdown-draft-js";
+import { useForm } from "react-hook-form";
+// import { createJobPosting } from "./actions";
 
-// because Metadata cannot be in client component, so I create this component
 export default function NewJobForm() {
   const form = useForm<CreateJobValues>({
     resolver: zodResolver(createJobSchema),
@@ -37,15 +40,27 @@ export default function NewJobForm() {
   } = form;
 
   async function onSubmit(values: CreateJobValues) {
-    alert(JSON.stringify(values, null, 2));
+    const formData = new FormData();
+
+    Object.entries(values).forEach(([key, value]) => {
+      if (value) {
+        formData.append(key, value);
+      }
+    });
+
+    // try {
+    //   await createJobPosting(formData);
+    // } catch (error) {
+    //   alert("Something went wrong, please try again.");
+    // }
   }
 
   return (
     <main className="m-auto my-10 max-w-3xl space-y-10">
       <div className="space-y-5 text-center">
-        <H1>Find your perfect job</H1>
-        <p className="text-muted">
-          Get your job posting seen by thousands of job seekers
+        <H1>Find your perfect developer</H1>
+        <p className="text-muted-foreground">
+          Get your job posting seen by thousands of job seekers.
         </p>
       </div>
       <div className="space-y-6 rounded-lg border p-4">
@@ -55,7 +70,6 @@ export default function NewJobForm() {
             Provide a job description and details
           </p>
         </div>
-
         <Form {...form}>
           <form
             className="space-y-4"
@@ -115,7 +129,7 @@ export default function NewJobForm() {
               name="companyLogo"
               render={({ field: { value, ...fieldValues } }) => (
                 <FormItem>
-                  <FormLabel>Compan logo</FormLabel>
+                  <FormLabel>Company logo</FormLabel>
                   <FormControl>
                     <Input
                       {...fieldValues}
@@ -138,7 +152,16 @@ export default function NewJobForm() {
                 <FormItem>
                   <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <Select {...field} defaultValue="">
+                    <Select
+                      {...field}
+                      defaultValue=""
+                      onChange={(e) => {
+                        field.onChange(e);
+                        if (e.currentTarget.value === "Remote") {
+                          trigger("location");
+                        }
+                      }}
+                    >
                       <option value="" hidden>
                         Select an option
                       </option>
@@ -212,8 +235,7 @@ export default function NewJobForm() {
                     <FormItem className="grow">
                       <FormControl>
                         <Input
-                          id="applicationEmail"
-                          placeholder="Website "
+                          placeholder="Website"
                           type="url"
                           {...field}
                           onChange={(e) => {
@@ -233,14 +255,37 @@ export default function NewJobForm() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <Label>Description</Label>
+                  <Label onClick={() => setFocus("description")}>
+                    Description
+                  </Label>
                   <FormControl>
-                    <RichTextEditor />
+                    <RichTextEditor
+                      onChange={(draft) =>
+                        field.onChange(draftToMarkdown(draft))
+                      }
+                      ref={field.ref}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <FormField
+              control={control}
+              name="salary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Salary</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="number" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <LoadingButton type="submit" loading={isSubmitting}>
+              Submit
+            </LoadingButton>
           </form>
         </Form>
       </div>
