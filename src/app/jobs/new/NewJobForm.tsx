@@ -18,6 +18,7 @@ import { jobTypes, locationTypes } from "@/lib/job-types";
 import LocationInput from "@/components/LocationInput";
 import { X } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import RichTextEditor from "@/components/RichTextEditor";
 
 // because Metadata cannot be in client component, so I create this component
 export default function NewJobForm() {
@@ -183,8 +184,63 @@ export default function NewJobForm() {
             />
             <div className="space-y-2">
               <Label htmlFor="applicationEmail">How to apply</Label>
-              <div></div>
+              <div className="flex justify-between">
+                <FormField
+                  control={control}
+                  name="applicationEmail"
+                  render={({ field }) => (
+                    <FormItem className="grow">
+                      <FormControl>
+                        <div className="flex items-center">
+                          <Input
+                            id="applicationEmail"
+                            placeholder="Email"
+                            type="email"
+                            {...field}
+                          />
+                          <span className="mx-2">or</span>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name="applicationUrl"
+                  render={({ field }) => (
+                    <FormItem className="grow">
+                      <FormControl>
+                        <Input
+                          id="applicationEmail"
+                          placeholder="Website "
+                          type="url"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            trigger("applicationEmail");
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
+            <FormField
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>Description</Label>
+                  <FormControl>
+                    <RichTextEditor />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </form>
         </Form>
       </div>
